@@ -362,7 +362,8 @@ public class DataGroupMember extends RaftMember {
           metaGroupMember.getLogManager().getLastLogIndex(), thatMetaLastLogTerm,
           metaGroupMember.getLogManager().getLastLogTerm());
       setCharacter(NodeCharacter.FOLLOWER);
-      lastHeartbeatReceivedTime = System.currentTimeMillis();
+//      lastHeartbeatReceivedTime = System.currentTimeMillis();
+      resetLastHeartbeatReceivedTime(System.currentTimeMillis());
       setVoteFor(electionRequest.getElector());
       updateHardState(thatTerm, getVoteFor());
     } else {
@@ -742,7 +743,8 @@ public class DataGroupMember extends RaftMember {
           synchronized (term) {
             setCharacter(NodeCharacter.ELECTOR);
 //            setLastHeartbeatReceivedTime(Long.MIN_VALUE);
-            resetLastHeartbeatReceivedTime(Long.MIN_VALUE);
+//            resetLastHeartbeatReceivedTime(Long.MIN_VALUE);
+            lastHeartbeatReceivedTime = Long.MIN_VALUE;
           }
         }
       }
