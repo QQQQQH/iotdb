@@ -72,11 +72,7 @@ import org.apache.iotdb.cluster.rpc.thrift.HeartBeatResponse;
 import org.apache.iotdb.cluster.rpc.thrift.Node;
 import org.apache.iotdb.cluster.rpc.thrift.RaftService.AsyncClient;
 import org.apache.iotdb.cluster.rpc.thrift.RaftService.Client;
-import org.apache.iotdb.cluster.server.NodeCharacter;
-import org.apache.iotdb.cluster.server.Peer;
-import org.apache.iotdb.cluster.server.RaftServer;
-import org.apache.iotdb.cluster.server.Response;
-import org.apache.iotdb.cluster.server.Timer;
+import org.apache.iotdb.cluster.server.*;
 import org.apache.iotdb.cluster.server.Timer.Statistic;
 import org.apache.iotdb.cluster.server.handlers.caller.AppendNodeEntryHandler;
 import org.apache.iotdb.cluster.server.handlers.caller.GenericHandler;
@@ -116,6 +112,12 @@ public abstract class RaftMember {
   private static final Logger logger = LoggerFactory.getLogger(RaftMember.class);
   private static final String MSG_NO_LEADER_IN_SYNC = "{}: No leader is found when synchronizing";
   public static final String MSG_LOG_IS_ACCEPTED = "{}: log {} is accepted";
+
+  /**
+   * Phi Accrual
+   */
+  private PhiAccrualFailureDetector detector;
+
   /**
    * when there is no leader, wait for waitLeaderTimeMs before return a NoLeader response to the
    * client.
@@ -257,6 +259,8 @@ public abstract class RaftMember {
     this.asyncHeartbeatClientPool = asyncHeartbeatPool;
     this.syncHeartbeatClientPool = syncHeartbeatPool;
     this.asyncSendLogClientPool = asyncClientPool;
+
+    this.detector = new PhiAccrualFailureDetector.Builder().build();
   }
 
   protected RaftMember(String name, AsyncClientPool asyncPool, SyncClientPool syncPool,
@@ -268,6 +272,12 @@ public abstract class RaftMember {
     this.asyncHeartbeatClientPool = asyncHeartbeatPool;
     this.syncHeartbeatClientPool = syncHeartbeatPool;
     this.asyncSendLogClientPool = asyncSendLogClientPool;
+
+    this.detector = new PhiAccrualFailureDetector.Builder().build();
+  }
+
+  public boolean isAvailable(long timestamp) {
+    return detector.isAvailable(timestamp);
   }
 
   /**
@@ -627,6 +637,13 @@ public abstract class RaftMember {
 
   public void setLastHeartbeatReceivedTime(long lastHeartbeatReceivedTime) {
     this.lastHeartbeatReceivedTime = lastHeartbeatReceivedTime;
+    detector.heartbeat(lastHeartbeatReceivedTime);
+  }
+
+  public void resetLastHeartbeatReceivedTime(long lastHeartbeatReceivedTime) {
+    this.lastHeartbeatReceivedTime = lastHeartbeatReceivedTime;
+    detector = new PhiAccrualFailureDetector.Builder().build();
+    detector.heartbeat(lastHeartbeatReceivedTime);
   }
 
   public Node getLeader() {
@@ -1111,7 +1128,8 @@ public abstract class RaftMember {
           name, thatTerm, term.get(), thatLastLogIndex, logManager.getLastLogIndex(),
           thatLastLogTerm, logManager.getLastLogTerm());
       setCharacter(NodeCharacter.FOLLOWER);
-      lastHeartbeatReceivedTime = System.currentTimeMillis();
+      resetLastHeartbeatReceivedTime(System.currentTimeMillis());
+//      lastHeartbeatReceivedTime = System.currentTimeMillis();
       setVoteFor(electionRequest.getElector());
       updateHardState(thatTerm, getVoteFor());
     } else {
@@ -1461,7 +1479,8 @@ public abstract class RaftMember {
         // only when the request is from a leader should we update lastHeartbeatReceivedTime,
         // otherwise the node may be stuck in FOLLOWER state by a stale node.
         setCharacter(NodeCharacter.FOLLOWER);
-        lastHeartbeatReceivedTime = System.currentTimeMillis();
+        resetLastHeartbeatReceivedTime(System.currentTimeMillis());
+//        lastHeartbeatReceivedTime = System.currentTimeMillis();
       }
     }
   }
@@ -1851,7 +1870,8 @@ public abstract class RaftMember {
         if (leaderTerm > localTerm) {
           stepDown(leaderTerm, true);
         } else {
-          lastHeartbeatReceivedTime = System.currentTimeMillis();
+//          lastHeartbeatReceivedTime = System.currentTimeMillis();
+          setLastHeartbeatReceivedTime(System.currentTimeMillis());
         }
         setLeader(leader);
         if (character != NodeCharacter.FOLLOWER) {

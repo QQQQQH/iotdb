@@ -162,6 +162,30 @@ public class ClusterConfig {
    */
   private boolean waitForSlowNode = true;
 
+
+  /**
+   * Phi Accrual Parameters
+   *
+   */
+
+  private double threshold = 16.0;
+  private int maxSampleSize = 200;
+  private double minStdDeviation = 500; // ms
+  private long acceptableHeartbeatPause = 0; // ms
+  private long firstHeartbeatEstimate = 500; // ms
+
+  public double getThreshold() { return threshold; }
+  public int getMaxSampleSize() { return maxSampleSize; }
+  public double getMinStdDeviation() { return minStdDeviation; }
+  public long getAcceptableHeartbeatPause() { return acceptableHeartbeatPause; }
+  public long getFirstHeartbeatEstimate() { return firstHeartbeatEstimate; }
+
+  public void setThreshold(double _threshold) { threshold = _threshold; }
+  public void setMaxSampleSize(int _maxSampleSize) { maxSampleSize = _maxSampleSize; }
+  public void setMinStdDeviation(double _minStdDeviation) { minStdDeviation = _minStdDeviation; }
+  public void setAcceptableHeartbeatPause(long _acceptableHeartbeatPause) { acceptableHeartbeatPause = _acceptableHeartbeatPause; }
+  public void setFirstHeartbeatEstimate(long _firstHeartbeatEstimate) { firstHeartbeatEstimate = _firstHeartbeatEstimate; }
+
   public int getSelectorNumOfClientPool() {
     return selectorNumOfClientPool;
   }

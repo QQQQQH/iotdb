@@ -504,7 +504,8 @@ public class MetaGroupMember extends RaftMember {
         if (joinCluster(node, startUpStatus)) {
           logger.info("Joined a cluster, starting the heartbeat thread");
           setCharacter(NodeCharacter.FOLLOWER);
-          setLastHeartbeatReceivedTime(System.currentTimeMillis());
+          resetLastHeartbeatReceivedTime(System.currentTimeMillis());
+//          setLastHeartbeatReceivedTime(System.currentTimeMillis());
           threadTaskInit();
           return;
         }

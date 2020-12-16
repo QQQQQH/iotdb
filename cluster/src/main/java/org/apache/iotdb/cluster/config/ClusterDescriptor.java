@@ -292,6 +292,27 @@ public class ClusterDescriptor {
         Boolean.parseBoolean(properties.getProperty("enable_use_persist_log_on_disk_to_catch_up",
             String.valueOf(config.isEnableUsePersistLogOnDiskToCatchUp()))));
 
+    /**
+     * Phi Accrual
+     *
+     */
+    config.setThreshold(Double.parseDouble(properties.
+            getProperty("threshold", String.valueOf(config.getThreshold()))));
+
+    config.setMaxSampleSize(Integer.parseInt(properties.
+            getProperty("max_sample_size", String.valueOf(config.getMaxSampleSize()))));
+
+    config.setMinStdDeviation(Double.parseDouble(properties.
+            getProperty("min_std_deviation", String.valueOf(config.getMinStdDeviation()))));
+
+    config.setAcceptableHeartbeatPause(Long.parseLong(properties.
+            getProperty("acceptable_heartbeat_pause", String.valueOf(config.getAcceptableHeartbeatPause()))));
+
+    config.setFirstHeartbeatEstimate(Long.parseLong(properties.
+            getProperty("first_heartbeat_estimate",
+                    String.valueOf(config.getFirstHeartbeatEstimate()))));
+
+
     String consistencyLevel = properties.getProperty("consistency_level");
     if (consistencyLevel != null) {
       config.setConsistencyLevel(ConsistencyLevel.getConsistencyLevel(consistencyLevel));
