@@ -81,7 +81,8 @@ public class HeartbeatThread implements Runnable {
           case LEADER:
             // send heartbeats to the followers
             sendHeartbeats();
-            Thread.sleep(RaftServer.getHeartBeatIntervalMs());
+//            Thread.sleep(RaftServer.getHeartBeatIntervalMs());
+            Thread.sleep(RaftServer.getHeartBeatIntervalMs()*5);
             hasHadLeader = true;
             break;
           case FOLLOWER:

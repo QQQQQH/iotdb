@@ -54,16 +54,18 @@ public class PhiAccrualFailureDetector {
     public boolean isAvailable() {
         return phi(System.currentTimeMillis()) < threshold;
     }
-    public synchronized void heartbeat(long timestamp) {
+    public LinkedList<Long> getHeartbeatHistory() { return heartbeatHistory.intervals; }
+    public synchronized void heartbeat(long timestamp, boolean append) {
         Long lastTimestamp = this.lastTimestamp.getAndSet(timestamp);
-        if(lastTimestamp != null) {
+        if(lastTimestamp != null && append) {
             long interval = timestamp-lastTimestamp;
-            if(isAvailable(timestamp)) heartbeatHistory.add(interval);
+            heartbeatHistory.add(interval);
+//            if(isAvailable(timestamp)) heartbeatHistory.add(interval);
         }
     }
-    public void heartbeat() {
-        heartbeat(System.currentTimeMillis());
-    }
+//    public void heartbeat() {
+//        heartbeat(System.currentTimeMillis());
+//    }
 
     public static class Builder {
         private double threshold = ClusterDescriptor.getInstance().getConfig().getThreshold();
