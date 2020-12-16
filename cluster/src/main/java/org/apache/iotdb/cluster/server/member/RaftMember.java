@@ -644,7 +644,7 @@ public abstract class RaftMember {
 
   public void resetLastHeartbeatReceivedTime(long lastHeartbeatReceivedTime) {
     this.lastHeartbeatReceivedTime = lastHeartbeatReceivedTime;
-    detector = new PhiAccrualFailureDetector.Builder().build();
+//    detector = new PhiAccrualFailureDetector.Builder().build();
 //    detector.heartbeat(lastHeartbeatReceivedTime);
     detector.heartbeat(lastHeartbeatReceivedTime, true);
     logger.info(detector.getHeartbeatHistory().toString());
