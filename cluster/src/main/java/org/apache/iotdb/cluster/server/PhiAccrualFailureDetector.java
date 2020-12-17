@@ -125,7 +125,7 @@ public class PhiAccrualFailureDetector {
             }
             intervals.add(interval);
             intervalSum.addAndGet(interval);
-            squaredIntervalSum.addAndGet(interval);
+            squaredIntervalSum.addAndGet(interval*interval);
             return this;
         }
     }
