@@ -61,7 +61,16 @@ public abstract class RaftServer implements RaftService.AsyncIface, RaftService.
   private static int writeOperationTimeoutMS =
       ClusterDescriptor.getInstance().getConfig().getWriteOperationTimeoutMS();
   private static int syncLeaderMaxWaitMs = 20 * 1000;
-  private static long heartBeatIntervalMs = 1000L;
+//  private static long heartBeatIntervalMs = 1000L;
+
+  /**
+   * test Phi Accrual
+   */
+//  private static long heartBeatIntervalMs = 1000L;
+//  private static long heartBeatIntervalMs = 5000L;
+//  private static long heartBeatIntervalMs = 10000L;
+  private static long heartBeatIntervalMs = 25000L;
+//  private static long heartBeatIntervalMs = 50000L;
 
   ClusterConfig config = ClusterDescriptor.getInstance().getConfig();
   // the socket poolServer will listen to

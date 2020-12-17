@@ -80,11 +80,13 @@ public class HeartbeatThread implements Runnable {
         switch (localMember.getCharacter()) {
           case LEADER:
             // send heartbeats to the followers
+            logger.info("{}: is Leader and is trying to send heartbeat.", memberName);
             sendHeartbeats();
             Thread.sleep(RaftServer.getHeartBeatIntervalMs());
             hasHadLeader = true;
             break;
           case FOLLOWER:
+            logger.info("{}: is Follower and is trying to receive heartbeat.", memberName);
             // check if heartbeat times out
             long heartBeatTime = System.currentTimeMillis();
             long heartBeatInterval = heartBeatTime - localMember.getLastHeartbeatReceivedTime();
